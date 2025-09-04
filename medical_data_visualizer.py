@@ -4,16 +4,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # 1
+#importando o df e vendo as colunas.
 df = pd.read_csv('medical_examination.csv', sep=',')
 print(df.columns)
 
-# 2
+# 2 criando uma nova coluna bmi e criando uma nova coluna overweitght de acordo com o resultado de bmi > 25.
 bmi = df['weight'] / ((df['height'] / 100) ** 2)
 df['bmi'] = bmi
 
 df['overweight'] = (df['bmi'] > 25).astype(int)
 
-# 3
+# 3 localizando todos os valores de cholesterol e gluc que são iguais a 1 ou maior e trocando pelo valor pedido.
 
 df.loc[df['cholesterol'] == 1, 'cholesterol'] = 0
 df.loc[df['cholesterol'] > 1, 'cholesterol'] = 1
@@ -24,15 +25,15 @@ df.loc[df['gluc'] > 1, 'gluc' ] = 1
 # 4
 def draw_cat_plot():
     
-    # 5
+    # 5 tranformando colunas em linhas com o melt, selecionando as váriaveis pedidas.
     df_cat = pd.melt(df, id_vars=['cardio'], value_vars=['cholesterol', 'gluc', 'smoke', 'alco', 'active', 'overweight'])
 
 
-    # 6
+    # 6 agrupando por três variaveis cardio, variable e value e realizando a contagem após isso.
     df_cat = df_cat.groupby(['cardio', 'variable', 'value']).size().reset_index(name='total')
     
 
-    # 7
+    # 7 Criando o gráfico de barras, com dois paines de acordo com o valor booleano de cardio (0 ou 1)
     catplot = sns.catplot(x='variable', y='total', hue='value', col='cardio', data=df_cat, kind='bar')
 
 
@@ -54,11 +55,7 @@ def draw_heat_map():
         (df['height'] <= df['height'].quantile(0.975)) &
         (df['weight'] >= df['weight'].quantile(0.025)) &
         (df['weight'] <= df['weight'].quantile(0.975))
-    ].copy()
-
-    # Remover a coluna 'bmi' se existir
-    if 'bmi' in df_heat.columns:
-        df_heat = df_heat.drop(columns=['bmi'])
+    ]
 
 
     # 12
